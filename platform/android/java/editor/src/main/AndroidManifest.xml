@@ -29,7 +29,7 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@mipmap/icon"
+        android:icon="@mipmap/themed_icon"
         android:label="${editorAppName}${editorBuildSuffix}"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/GodotEditorSplashScreenTheme"
@@ -43,7 +43,7 @@
             android:name=".GodotEditor"
             android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize|density|keyboard|navigation|screenLayout|uiMode"
             android:exported="true"
-            android:icon="@mipmap/icon"
+            android:icon="@mipmap/themed_icon"
             android:launchMode="singleTask"
             android:screenOrientation="userLandscape">
             <layout
@@ -52,9 +52,21 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.godot" />
+                <data android:pathPattern=".*\\..*\\.godot" />
+                <data android:pathPattern=".*\\..*\\..*\\.godot" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.godot" />
+                <data android:host="*" />
             </intent-filter>
         </activity>
         <activity
