@@ -40,6 +40,14 @@ body:
     validations:
       required: true
 
+  - type: input
+    attributes:
+      label: Android device information (optional)
+      description: Please provide Android device details if the issue occurs on or is related to Android.
+      placeholder: Pixel 6 - Android 12 - Google Tensor - Mali-G78 MP20 - 8 GB RAM
+    validations:
+      required: false
+
   - type: textarea
     attributes:
       label: Issue description
