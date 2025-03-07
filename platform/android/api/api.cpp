@@ -30,6 +30,7 @@
 
 #include "api.h"
 
+#include "android_runtime.h"
 #include "java_class_wrapper.h"
 #include "jni_singleton.h"
 
@@ -37,6 +38,7 @@
 
 #if !defined(ANDROID_ENABLED)
 static JavaClassWrapper *java_class_wrapper = nullptr;
+static AndroidRuntime *android_runtime = nullptr;
 #endif
 
 void register_android_api() {
@@ -44,6 +46,9 @@ void register_android_api() {
 	// On Android platforms, the `java_class_wrapper` instantiation occurs in
 	// `platform/android/java_godot_lib_jni.cpp#Java_org_godotengine_godot_GodotLib_setup`
 	java_class_wrapper = memnew(JavaClassWrapper);
+	android_runtime = memnew(AndroidRuntime);
+	GDREGISTER_CLASS(AndroidRuntime);
+	Engine::get_singleton()->add_singleton(Engine::Singleton("AndroidRuntime", AndroidRuntime::get_singleton()));
 #endif
 	GDREGISTER_CLASS(JNISingleton);
 	GDREGISTER_CLASS(JavaClass);
@@ -55,6 +60,7 @@ void register_android_api() {
 void unregister_android_api() {
 #if !defined(ANDROID_ENABLED)
 	memdelete(java_class_wrapper);
+	memdelete(android_runtime);
 #endif
 }
 
@@ -118,4 +124,36 @@ JavaClassWrapper::JavaClassWrapper() {
 	singleton = this;
 }
 
+AndroidRuntime *AndroidRuntime::singleton = nullptr;
+
+void AndroidRuntime::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("getApplicationContext"), &AndroidRuntime::getApplicationContext);
+	ClassDB::bind_method(D_METHOD("getActivity"), &AndroidRuntime::getActivity);
+	ClassDB::bind_method(D_METHOD("createRunnableFromGodotCallable", "godotCallable"), &AndroidRuntime::createRunnableFromGodotCallable);
+	ClassDB::bind_method(D_METHOD("createCallableFromGodotCallable", "godotCallable"), &AndroidRuntime::createCallableFromGodotCallable);
+}
+
+Variant AndroidRuntime::getApplicationContext() {
+	WARN_PRINT("AndroidRuntime is only available on Android platforms");
+	return Variant();
+}
+
+Variant AndroidRuntime::getActivity() {
+	WARN_PRINT("AndroidRuntime is only available on Android platforms");
+	return Variant();
+}
+
+Variant AndroidRuntime::createRunnableFromGodotCallable(const Callable &godotCallable) {
+	WARN_PRINT("AndroidRuntime is only available on Android platforms");
+	return Variant();
+}
+
+Variant AndroidRuntime::createCallableFromGodotCallable(const Callable &godotCallable) {
+	WARN_PRINT("AndroidRuntime is only available on Android platforms");
+	return Variant();
+}
+
+AndroidRuntime::AndroidRuntime() {
+	singleton = this;
+}
 #endif
