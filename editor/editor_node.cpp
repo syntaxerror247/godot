@@ -188,6 +188,16 @@ static const String EDITOR_NODE_CONFIG_SECTION = "EditorNode";
 static const String REMOVE_ANDROID_BUILD_TEMPLATE_MESSAGE = TTRC("The Android build template is already installed in this project and it won't be overwritten.\nRemove the \"%s\" directory manually before attempting this operation again.");
 static const String INSTALL_ANDROID_BUILD_TEMPLATE_MESSAGE = TTRC("This will set up your project for gradle Android builds by installing the source template to \"%s\".\nNote that in order to make gradle builds instead of using pre-built APKs, the \"Use Gradle Build\" option should be enabled in the Android export preset.");
 
+static bool _is_android_editor() {
+	bool result = false;
+#ifdef ANDROID_ENABLED
+	if (!OS::get_singleton()->has_feature("xr_editor")) {
+		result = true;
+	}
+#endif
+	return result;
+}
+
 bool EditorProgress::step(const String &p_state, int p_step, bool p_force_refresh) {
 	if (!force_background && Thread::is_main_thread()) {
 		return EditorNode::progress_task_step(task, p_state, p_step, p_force_refresh);
@@ -7403,21 +7413,26 @@ EditorNode::EditorNode() {
 	main_vbox = memnew(VBoxContainer);
 
 #ifdef ANDROID_ENABLED
-	main_hbox = memnew(HBoxContainer);
-	main_hbox->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);
+	base_vbox = memnew(VBoxContainer);
+	base_vbox->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT, Control::PRESET_MODE_MINSIZE, theme->get_constant(SNAME("window_border_margin"), EditorStringName(Editor)));
 
+	title_bar = memnew(EditorTitleBar);
+	base_vbox->add_child(title_bar);
+
+	main_hbox = memnew(HBoxContainer);
 	main_hbox->add_child(main_vbox);
 	main_vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	base_vbox->add_child(main_hbox);
 
 	_touch_actions_panel_mode_changed();
 
-	gui_base->add_child(main_hbox);
+	gui_base->add_child(base_vbox);
 #else
 	gui_base->add_child(main_vbox);
-#endif
 
 	title_bar = memnew(EditorTitleBar);
 	main_vbox->add_child(title_bar);
+#endif
 
 	left_l_hsplit = memnew(DockSplitContainer);
 	left_l_hsplit->set_name("DockHSplitLeftL");
@@ -7572,19 +7587,34 @@ EditorNode::EditorNode() {
 		title_bar->add_child(left_menu_spacer);
 	}
 
-	main_menu = memnew(MenuBar);
-	main_menu->set_mouse_filter(Control::MOUSE_FILTER_STOP);
+	if (_is_android_editor()) {
+		main_menu = memnew(MenuButton);
+		main_menu->set_text(TTRC("Main Menu"));
+		main_menu->set_theme_type_variation("FlatMenuButton");
+		main_menu->set_accessibility_name(TTRC("Main Menu"));
+		main_menu->set_focus_mode(Control::FOCUS_NONE);
+		main_menu->set_button_icon(theme->get_icon(SNAME("TripleBar"), EditorStringName(EditorIcons)));
+	} else {
+		main_menu = memnew(MenuBar);
+		main_menu->set_mouse_filter(Control::MOUSE_FILTER_STOP);
+		main_menu->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
+		main_menu->set_theme_type_variation("MainMenuBar");
+		main_menu->set_start_index(0); // Main menu, add to the start of global menu.
+		main_menu->set_prefer_global_menu(global_menu);
+		main_menu->set_switch_on_hover(true);
+	}
+
 	title_bar->add_child(main_menu);
-	main_menu->set_v_size_flags(Control::SIZE_SHRINK_CENTER);
-	main_menu->set_theme_type_variation("MainMenuBar");
-	main_menu->set_start_index(0); // Main menu, add to the start of global menu.
-	main_menu->set_prefer_global_menu(global_menu);
-	main_menu->set_switch_on_hover(true);
 
 	file_menu = memnew(PopupMenu);
 	file_menu->set_name(TTRC("Scene"));
-	main_menu->add_child(file_menu);
-	main_menu->set_menu_tooltip(0, TTR("Operations with scene files."));
+
+	if (_is_android_editor()) {
+		main_menu->get_popup()->add_submenu_node_item(TTRC("Scene"), file_menu);
+	} else {
+		main_menu->add_child(file_menu);
+		main_menu->set_menu_tooltip(0, TTR("Operations with scene files."));
+	}
 
 	accept = memnew(AcceptDialog);
 	accept->set_autowrap(true);
@@ -7709,7 +7739,12 @@ EditorNode::EditorNode() {
 
 	project_menu = memnew(PopupMenu);
 	project_menu->set_name(TTRC("Project"));
-	main_menu->add_child(project_menu);
+
+	if (_is_android_editor()) {
+		main_menu->get_popup()->add_submenu_node_item(TTRC("Project"), project_menu);
+	} else {
+		main_menu->add_child(project_menu);
+	}
 
 	project_menu->add_shortcut(ED_SHORTCUT_AND_COMMAND("editor/project_settings", TTRC("Project Settings..."), Key::NONE, TTRC("Project Settings")), PROJECT_OPEN_SETTINGS);
 	project_menu->connect(SceneStringName(id_pressed), callable_mp(this, &EditorNode::_menu_option));
@@ -7767,11 +7802,19 @@ EditorNode::EditorNode() {
 	// Options are added and handled by DebuggerEditorPlugin.
 	debug_menu = memnew(PopupMenu);
 	debug_menu->set_name(TTRC("Debug"));
-	main_menu->add_child(debug_menu);
+	if (_is_android_editor()) {
+		main_menu->get_popup()->add_submenu_node_item(TTRC("Debug"), debug_menu);
+	} else {
+		main_menu->add_child(debug_menu);
+	}
 
 	settings_menu = memnew(PopupMenu);
 	settings_menu->set_name(TTRC("Editor"));
-	main_menu->add_child(settings_menu);
+	if (_is_android_editor()) {
+		main_menu->get_popup()->add_submenu_node_item(TTRC("Editor"), settings_menu);
+	} else {
+		main_menu->add_child(settings_menu);
+	}
 
 #ifdef MACOS_ENABLED
 	if (!global_menu) {
@@ -7824,7 +7867,11 @@ EditorNode::EditorNode() {
 	if (global_menu && NativeMenu::get_singleton()->has_system_menu(NativeMenu::HELP_MENU_ID)) {
 		help_menu->set_system_menu(NativeMenu::HELP_MENU_ID);
 	}
-	main_menu->add_child(help_menu);
+	if (_is_android_editor()) {
+		main_menu->get_popup()->add_submenu_node_item(TTRC("Help"), help_menu);
+	} else {
+		main_menu->add_child(help_menu);
+	}
 
 	help_menu->connect(SceneStringName(id_pressed), callable_mp(this, &EditorNode::_menu_option));
 
