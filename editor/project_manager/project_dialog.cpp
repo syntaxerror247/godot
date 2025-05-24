@@ -741,8 +741,8 @@ void ProjectDialog::ok_pressed() {
 	hide();
 	if (mode == MODE_NEW || mode == MODE_IMPORT || mode == MODE_INSTALL) {
 #ifdef ANDROID_ENABLED
-		JavaClass build_version = JavaClassWrapper::get_singleton()->wrap("android.os.Build$VERSION");
-		if (build_version::SDK_INT != 30) {
+		Ref<JavaClass> build_version = JavaClassWrapper::get_singleton()->wrap("android.os.Build$VERSION");
+		if (build_version.SDK_INT != 30) {
 			// Create a .nomedia file to hide assets from media apps on Android.
 			const String nomedia_file_path = path.path_join(".nomedia");
 			Ref<FileAccess> f2 = FileAccess::open(nomedia_file_path, FileAccess::WRITE);
