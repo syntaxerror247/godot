@@ -47,6 +47,8 @@
 #include "scene/gui/separator.h"
 #include "scene/gui/texture_rect.h"
 
+#include "platform/android/api/java_class_wrapper.h"
+
 void ProjectDialog::_set_message(const String &p_msg, MessageType p_type, InputType p_input_type) {
 	msg->set_text(p_msg);
 	get_ok_button()->set_disabled(p_type == MESSAGE_ERROR);
