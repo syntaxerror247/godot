@@ -474,7 +474,6 @@ class Godot private constructor(val context: Context) {
 	@Keep
 	fun isInEdgeToEdgeMode() = isEdgeToEdge.get()
 
-
 	fun setSystemBarsAppearance() {
 		val window = getActivity()?.window ?: return
 		val isLight = ColorUtils.calculateLuminance(getWindowBackgroundColor(window)) > 0.5
@@ -492,8 +491,6 @@ class Godot private constructor(val context: Context) {
 			backgroundColor
 		}
 	}
-
-
 
 	/**
 	 * Used to complete initialization of the view used by the engine for rendering.
