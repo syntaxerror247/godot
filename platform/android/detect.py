@@ -21,7 +21,7 @@ def get_opts():
 
     return [
         ("ANDROID_SDK_ROOT", "Path to the Android SDK", get_env_android_sdk_root()),
-        ("ndk_platform", 'Target platform (android-<api>, e.g. "android-21")', "android-21"),
+        ("ndk_platform", 'Target platform (android-<api>, e.g. "android-24")', "android-24"),
         EnumVariable("android_arch", "Target architecture", "armv7", ("armv7", "arm64v8", "x86", "x86_64")),
         BoolVariable("android_neon", "Enable NEON support (armv7 only)", True),
         BoolVariable("store_release", "Editor build for Google Play Store (for official builds only)", False),
