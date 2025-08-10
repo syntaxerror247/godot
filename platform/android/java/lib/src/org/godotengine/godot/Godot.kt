@@ -492,6 +492,16 @@ class Godot private constructor(val context: Context) {
 		}
 	}
 
+	fun setWindowColor(colorStr: String) {
+		val decorView = getActivity()?.window?.decorView ?: return
+		runOnHostThread {
+			val color = colorStr.toColorInt()
+			decorView.setBackgroundColor(color)
+			backgroundColor = color
+			setSystemBarsAppearance()
+		}
+	}
+
 	/**
 	 * Used to complete initialization of the view used by the engine for rendering.
 	 *
