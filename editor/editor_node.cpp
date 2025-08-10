@@ -691,7 +691,7 @@ void EditorNode::_update_theme(bool p_skip_creation) {
 	editor_dock_manager->update_docks_menu();
 	editor_dock_manager->set_tab_icon_max_width(theme->get_constant(SNAME("class_icon_size"), EditorStringName(Editor)));
 #ifdef ANDROID_ENABLED
-	DisplayServer::get_singleton()->window_set_color(EDITOR_GET("interface/theme/base_color"));
+	DisplayServer::get_singleton()->window_set_color(theme->get_color(SNAME("background"), EditorStringName(Editor)));
 #endif
 }
 
