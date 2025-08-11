@@ -111,6 +111,149 @@ bool ScrollContainer::_is_v_scroll_visible() const {
 	return v_scroll->is_visible() && v_scroll->get_parent() == this;
 }
 
+void ScrollContainer::input(const Ref<InputEvent> &p_event) {
+	ERR_FAIL_COND(p_event.is_null());
+
+	bool h_scroll_enabled = horizontal_scroll_mode != SCROLL_MODE_DISABLED;
+	bool v_scroll_enabled = vertical_scroll_mode != SCROLL_MODE_DISABLED;
+
+	Ref<InputEventScreenTouch> touch = p_event;
+
+	// Touchscreen drag (start/stop)
+	if (touch.is_valid()) {
+		if (touch->is_pressed()) {
+			// Start drag
+			if (drag_touching) {
+				_cancel_drag();
+			}
+
+			drag_speed = Vector2();
+			drag_accum = Vector2();
+			last_drag_accum = Vector2();
+			drag_from = Vector2(h_scroll->get_value(), v_scroll->get_value());
+			drag_touching = true;
+			drag_touching_deaccel = false;
+			beyond_deadzone = false;
+			set_process_internal(true);
+			time_since_motion = 0;
+
+		} else { // touch released
+			if (drag_touching) {
+				if (drag_speed == Vector2()) {
+					_cancel_drag();
+				} else {
+					drag_touching_deaccel = true;
+				}
+			}
+		}
+		return;
+	}
+
+	// Touchscreen drag motion
+	Ref<InputEventScreenDrag> drag = p_event;
+	if (drag.is_valid()) {
+		if (drag_touching && !drag_touching_deaccel) {
+			Vector2 motion = drag->get_relative();
+			drag_accum -= motion;
+
+			if (beyond_deadzone || 
+				(h_scroll_enabled && Math::abs(drag_accum.x) > deadzone) || 
+				(v_scroll_enabled && Math::abs(drag_accum.y) > deadzone)) {
+
+				if (!beyond_deadzone) {
+					propagate_notification(NOTIFICATION_SCROLL_BEGIN);
+					emit_signal(SNAME("scroll_started"));
+
+					beyond_deadzone = true;
+					// Reset to avoid jump after deadzone
+					drag_accum = -motion;
+				}
+
+				Vector2 diff = drag_from + drag_accum;
+				if (h_scroll_enabled) {
+					h_scroll->scroll_to(diff.x);
+				} else {
+					drag_accum.x = 0;
+				}
+				if (v_scroll_enabled) {
+					v_scroll->scroll_to(diff.y);
+				} else {
+					drag_accum.y = 0;
+				}
+				time_since_motion = 0;
+			}
+		}
+		return;
+	}
+
+	// Optional: Mouse-based drag for desktops
+	Ref<InputEventMouseButton> mb = p_event;
+	if (mb.is_valid()) {
+		bool is_touchscreen_available = DisplayServer::get_singleton()->is_touchscreen_available();
+		if (is_touchscreen_available && mb->get_button_index() == MouseButton::LEFT) {
+			if (mb->is_pressed()) {
+				if (drag_touching) {
+					_cancel_drag();
+				}
+
+				drag_speed = Vector2();
+				drag_accum = Vector2();
+				last_drag_accum = Vector2();
+				drag_from = Vector2(h_scroll->get_value(), v_scroll->get_value());
+				drag_touching = true;
+				drag_touching_deaccel = false;
+				beyond_deadzone = false;
+				set_process_internal(true);
+				time_since_motion = 0;
+
+			} else {
+				if (drag_touching) {
+					if (drag_speed == Vector2()) {
+						_cancel_drag();
+					} else {
+						drag_touching_deaccel = true;
+					}
+				}
+			}
+		}
+		return;
+	}
+
+	Ref<InputEventMouseMotion> mm = p_event;
+	if (mm.is_valid()) {
+		if (drag_touching && !drag_touching_deaccel) {
+			Vector2 motion = mm->get_relative();
+			drag_accum -= motion;
+
+			if (beyond_deadzone || 
+				(h_scroll_enabled && Math::abs(drag_accum.x) > deadzone) || 
+				(v_scroll_enabled && Math::abs(drag_accum.y) > deadzone)) {
+
+				if (!beyond_deadzone) {
+					propagate_notification(NOTIFICATION_SCROLL_BEGIN);
+					emit_signal(SNAME("scroll_started"));
+
+					beyond_deadzone = true;
+					drag_accum = -motion;
+				}
+
+				Vector2 diff = drag_from + drag_accum;
+				if (h_scroll_enabled) {
+					h_scroll->scroll_to(diff.x);
+				} else {
+					drag_accum.x = 0;
+				}
+				if (v_scroll_enabled) {
+					v_scroll->scroll_to(diff.y);
+				} else {
+					drag_accum.y = 0;
+				}
+				time_since_motion = 0;
+			}
+		}
+	}
+}
+
 void ScrollContainer::gui_input(const Ref<InputEvent> &p_gui_input) {
 	ERR_FAIL_COND(p_gui_input.is_null());
 
@@ -172,78 +315,6 @@ void ScrollContainer::gui_input(const Ref<InputEvent> &p_gui_input) {
 				return;
 			}
 		}
-
-		bool is_touchscreen_available = DisplayServer::get_singleton()->is_touchscreen_available();
-		if (!is_touchscreen_available) {
-			return;
-		}
-
-		if (mb->get_button_index() != MouseButton::LEFT) {
-			return;
-		}
-
-		if (mb->is_pressed()) {
-			if (drag_touching) {
-				_cancel_drag();
-			}
-
-			drag_speed = Vector2();
-			drag_accum = Vector2();
-			last_drag_accum = Vector2();
-			drag_from = Vector2(prev_h_scroll, prev_v_scroll);
-			drag_touching = true;
-			drag_touching_deaccel = false;
-			beyond_deadzone = false;
-			time_since_motion = 0;
-			set_process_internal(true);
-			time_since_motion = 0;
-
-		} else {
-			if (drag_touching) {
-				if (drag_speed == Vector2()) {
-					_cancel_drag();
-				} else {
-					drag_touching_deaccel = true;
-				}
-			}
-		}
-		return;
-	}
-
-	Ref<InputEventMouseMotion> mm = p_gui_input;
-
-	if (mm.is_valid()) {
-		if (drag_touching && !drag_touching_deaccel) {
-			Vector2 motion = mm->get_relative();
-			drag_accum -= motion;
-
-			if (beyond_deadzone || (h_scroll_enabled && Math::abs(drag_accum.x) > deadzone) || (v_scroll_enabled && Math::abs(drag_accum.y) > deadzone)) {
-				if (!beyond_deadzone) {
-					propagate_notification(NOTIFICATION_SCROLL_BEGIN);
-					emit_signal(SNAME("scroll_started"));
-
-					beyond_deadzone = true;
-					// Resetting drag_accum here ensures smooth scrolling after reaching deadzone.
-					drag_accum = -motion;
-				}
-				Vector2 diff = drag_from + drag_accum;
-				if (h_scroll_enabled) {
-					h_scroll->scroll_to(diff.x);
-				} else {
-					drag_accum.x = 0;
-				}
-				if (v_scroll_enabled) {
-					v_scroll->scroll_to(diff.y);
-				} else {
-					drag_accum.y = 0;
-				}
-				time_since_motion = 0;
-			}
-		}
-
-		if (v_scroll->get_value() != prev_v_scroll || h_scroll->get_value() != prev_h_scroll) {
-			accept_event(); // Accept event if scroll changed.
-		}
 		return;
 	}
 
@@ -257,7 +328,7 @@ void ScrollContainer::gui_input(const Ref<InputEvent> &p_gui_input) {
 		}
 
 		if (v_scroll->get_value() != prev_v_scroll || h_scroll->get_value() != prev_h_scroll) {
-			accept_event(); // Accept event if scroll changed.
+			accept_event();
 		}
 		return;
 	}
@@ -496,6 +567,10 @@ void ScrollContainer::_notification(int p_what) {
 
 		case NOTIFICATION_DRAG_END: {
 			set_process_internal(false);
+		} break;
+
+		case NOTIFICATION_VISIBILITY_CHANGED: {
+			set_process_input(is_visible_in_tree());
 		} break;
 
 		case NOTIFICATION_INTERNAL_PROCESS: {

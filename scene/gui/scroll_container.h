@@ -109,6 +109,7 @@ protected:
 	void _accessibility_action_scroll_right(const Variant &p_data);
 
 public:
+	virtual void input(const Ref<InputEvent> &p_event) override;
 	virtual void gui_input(const Ref<InputEvent> &p_gui_input) override;
 
 	void set_h_scroll(int p_pos);
