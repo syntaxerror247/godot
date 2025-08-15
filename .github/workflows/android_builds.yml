@@ -29,7 +29,7 @@ jobs:
           - name: Template arm32 (target=template_release, arch=arm32)
             cache-name: android-template-arm32
             target: template_release
-            scons-flags: arch=arm32
+            scons-flags: arch=x86_64
 
           - name: Template arm64 (target=template_release, arch=arm64)
             cache-name: android-template-arm64
