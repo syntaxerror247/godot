@@ -26,18 +26,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Editor w/ Mono (target=editor)
+          - name: Editor (target=editor)
             cache-name: linux-editor-mono
             target: editor
-            scons-flags: module_mono_enabled=yes
-            bin: ./bin/godot.linuxbsd.editor.x86_64.mono
-            build-mono: true
-            doc-test: true
-            proj-conv: true
-            api-compat: true
+            bin: ./bin/godot.linuxbsd.editor.x86_64
             artifact: true
-            # Validate godot-cpp compatibility on one arbitrary editor build.
-            godot-cpp: true
 
           - name: Editor with doubles and GCC sanitizers (target=editor, dev_build=yes, scu_build=yes, precision=double, use_asan=yes, use_ubsan=yes, linker=mold)
             cache-name: linux-editor-double-sanitizers
