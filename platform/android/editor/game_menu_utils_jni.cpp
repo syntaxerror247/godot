@@ -142,4 +142,22 @@ JNIEXPORT void JNICALL Java_org_godotengine_godot_editor_utils_GameMenuUtils_set
 	}
 #endif
 }
+
+JNIEXPORT void JNICALL Java_org_godotengine_godot_editor_utils_GameMenuUtils_resetSpeed(JNIEnv *env, jclass clazz) {
+#ifdef TOOLS_ENABLED
+	GameViewPlugin *game_view_plugin = _get_game_view_plugin();
+	if (game_view_plugin != nullptr && game_view_plugin->get_debugger().is_valid()) {
+		game_view_plugin->get_debugger()->reset_speed();
+	}
+#endif
+}
+
+JNIEXPORT void JNICALL Java_org_godotengine_godot_editor_utils_GameMenuUtils_setSpeedMultiplier(JNIEnv *env, jclass clazz, jdouble multiplier) {
+#ifdef TOOLS_ENABLED
+    GameViewPlugin *game_view_plugin = _get_game_view_plugin();
+    if (game_view_plugin != nullptr && game_view_plugin->get_debugger().is_valid()) {
+        game_view_plugin->get_debugger()->set_speed_multiplier(multiplier);
+    }
+#endif
+}
 }

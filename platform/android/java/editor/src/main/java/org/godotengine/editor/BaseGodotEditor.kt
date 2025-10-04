@@ -150,6 +150,8 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 		internal const val GAME_MENU_ACTION_RESET_CAMERA_3D_POSITION = "resetCamera3DPosition"
 		internal const val GAME_MENU_ACTION_EMBED_GAME_ON_PLAY = "embedGameOnPlay"
 		internal const val GAME_MENU_ACTION_SET_DEBUG_MUTE_AUDIO = "setDebugMuteAudio"
+		internal const val GAME_MENU_ACTION_RESET_SPEED = "resetSpeed"
+		internal const val GAME_MENU_ACTION_SET_SPEED_MULTIPLIER = "setSpeedMultiplier"
 
 		private const val GAME_WORKSPACE = "Game"
 
@@ -839,6 +841,13 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 				val enabled = actionData.getBoolean(KEY_GAME_MENU_ACTION_PARAM1)
 				muteAudio(enabled)
 			}
+			GAME_MENU_ACTION_RESET_SPEED -> {
+				resetSpeed()
+			}
+			GAME_MENU_ACTION_SET_SPEED_MULTIPLIER -> {
+				val multiplier = actionData.getDouble(KEY_GAME_MENU_ACTION_PARAM1)
+				setSpeedMultiplier(multiplier)
+			}
 		}
 	}
 
@@ -906,6 +915,19 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 		gameMenuState.putBoolean(GAME_MENU_ACTION_SET_DEBUG_MUTE_AUDIO, enabled)
 		godot?.runOnRenderThread {
 			GameMenuUtils.setDebugMuteAudio(enabled)
+		}
+	}
+
+	override fun resetSpeed() {
+		godot?.runOnRenderThread {
+			GameMenuUtils.resetSpeed()
+		}
+	}
+
+	override fun setSpeedMultiplier(multiplier: Double) {
+		gameMenuState.putDouble(GAME_MENU_ACTION_SET_SPEED_MULTIPLIER, multiplier)
+		godot?.runOnRenderThread {
+			GameMenuUtils.setSpeedMultiplier(multiplier)
 		}
 	}
 

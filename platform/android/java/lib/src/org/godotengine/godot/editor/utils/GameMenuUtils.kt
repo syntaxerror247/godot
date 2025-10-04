@@ -95,6 +95,13 @@ object GameMenuUtils {
 	@JvmStatic
 	external fun setDebugMuteAudio(enabled: Boolean)
 
+	@JvmStatic
+	external fun resetSpeed()
+
+	@JvmStatic
+	external fun setSpeedMultiplier(multiplier: Double)
+
+
 	/**
 	 * Returns [GameEmbedMode] stored in the editor settings.
 	 *

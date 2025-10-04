@@ -43,6 +43,7 @@ import android.widget.RadioButton
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import org.bouncycastle.math.ec.WTauNafMultiplier
 import org.godotengine.editor.BaseGodotEditor
 import org.godotengine.editor.BaseGodotEditor.Companion.SNACKBAR_SHOW_DURATION_MS
 import org.godotengine.editor.R
@@ -102,6 +103,8 @@ class GameMenuFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 		fun reset3DCamera()
 		fun manipulateCamera(mode: CameraMode)
 		fun muteAudio(enabled: Boolean)
+		fun resetSpeed()
+		fun setSpeedMultiplier(multiplier: Double)
 
 		fun isGameEmbeddingSupported(): Boolean
 		fun embedGameOnPlay(embedded: Boolean)
@@ -130,6 +133,12 @@ class GameMenuFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 	}
 	private val nextFrameButton: View? by lazy {
 		view?.findViewById(R.id.game_menu_next_frame_button)
+	}
+	private val speedMultiplierButton: View? by lazy {
+		view?.findViewById(R.id.game_menu_speed_multiplier_button)
+	}
+	private val resetSpeedButton: View? by lazy {
+		view?.findViewById(R.id.game_menu_reset_speed_button)
 	}
 	private val unselectNodesButton: RadioButton? by lazy {
 		view?.findViewById(R.id.game_menu_unselect_nodes_button)
@@ -175,6 +184,32 @@ class GameMenuFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 				menu.setGroupDividerEnabled(true)
+			}
+		}
+	}
+
+	private val speedMultiplierMenu: PopupMenu by lazy {
+		PopupMenu(context, speedMultiplierButton).apply {
+			inflate(R.menu.speed_multiplier_options)
+			setOnMenuItemClickListener { menuItem: MenuItem ->
+				val selectedSpeed = when (menuItem.itemId) {
+					R.id.speed_1_16 -> 0.0625f
+					R.id.speed_1_8 -> 0.125f
+					R.id.speed_1_4 -> 0.25f
+					R.id.speed_1_2 -> 0.5f
+					R.id.speed_3_4 -> 0.75f
+					R.id.speed_1_0 -> 1.0f
+					R.id.speed_1_25 -> 1.25f
+					R.id.speed_1_5 -> 1.5f
+					R.id.speed_1_75 -> 1.75f
+					R.id.speed_2_0 -> 2.0f
+					R.id.speed_4_0 -> 4.0f
+					R.id.speed_8_0 -> 8.0f
+					R.id.speed_16_0 -> 16.0f
+					else -> 1.0f
+				}
+				menuListener?.setSpeedMultiplier(selectedSpeed.toDouble())
+				false
 			}
 		}
 	}
@@ -277,6 +312,18 @@ class GameMenuFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 		nextFrameButton?.apply {
 			setOnClickListener {
 				menuListener?.dispatchNextFrame()
+			}
+		}
+
+		speedMultiplierButton?.apply {
+			setOnClickListener {
+				speedMultiplierMenu.show()
+			}
+		}
+
+		resetSpeedButton?.apply {
+			setOnClickListener {
+				menuListener?.resetSpeed()
 			}
 		}
 
