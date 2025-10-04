@@ -240,39 +240,39 @@ static const char *LAUNCHER_ADAPTIVE_ICON_BACKGROUND_OPTION = PNAME("launcher_ic
 static const char *LAUNCHER_ADAPTIVE_ICON_MONOCHROME_OPTION = PNAME("launcher_icons/adaptive_monochrome_432x432");
 
 static const LauncherIcon LAUNCHER_ICONS[ICON_DENSITIES_COUNT] = {
-	{ "res/mipmap-xxxhdpi-v4/icon.png", 192 },
-	{ "res/mipmap-xxhdpi-v4/icon.png", 144 },
-	{ "res/mipmap-xhdpi-v4/icon.png", 96 },
-	{ "res/mipmap-hdpi-v4/icon.png", 72 },
-	{ "res/mipmap-mdpi-v4/icon.png", 48 },
-	{ "res/mipmap/icon.png", 192 }
+	{ "res/mipmap-xxxhdpi-v4/icon.webp", 192 },
+	{ "res/mipmap-xxhdpi-v4/icon.webp", 144 },
+	{ "res/mipmap-xhdpi-v4/icon.webp", 96 },
+	{ "res/mipmap-hdpi-v4/icon.webp", 72 },
+	{ "res/mipmap-mdpi-v4/icon.webp", 48 },
+	{ "res/mipmap/icon.webp", 192 }
 };
 
 static const LauncherIcon LAUNCHER_ADAPTIVE_ICON_FOREGROUNDS[ICON_DENSITIES_COUNT] = {
-	{ "res/mipmap-xxxhdpi-v4/icon_foreground.png", 432 },
-	{ "res/mipmap-xxhdpi-v4/icon_foreground.png", 324 },
-	{ "res/mipmap-xhdpi-v4/icon_foreground.png", 216 },
-	{ "res/mipmap-hdpi-v4/icon_foreground.png", 162 },
-	{ "res/mipmap-mdpi-v4/icon_foreground.png", 108 },
-	{ "res/mipmap/icon_foreground.png", 432 }
+	{ "res/mipmap-xxxhdpi-v4/icon_foreground.webp", 432 },
+	{ "res/mipmap-xxhdpi-v4/icon_foreground.webp", 324 },
+	{ "res/mipmap-xhdpi-v4/icon_foreground.webp", 216 },
+	{ "res/mipmap-hdpi-v4/icon_foreground.webp", 162 },
+	{ "res/mipmap-mdpi-v4/icon_foreground.webp", 108 },
+	{ "res/mipmap/icon_foreground.webp", 432 }
 };
 
 static const LauncherIcon LAUNCHER_ADAPTIVE_ICON_BACKGROUNDS[ICON_DENSITIES_COUNT] = {
-	{ "res/mipmap-xxxhdpi-v4/icon_background.png", 432 },
-	{ "res/mipmap-xxhdpi-v4/icon_background.png", 324 },
-	{ "res/mipmap-xhdpi-v4/icon_background.png", 216 },
-	{ "res/mipmap-hdpi-v4/icon_background.png", 162 },
-	{ "res/mipmap-mdpi-v4/icon_background.png", 108 },
-	{ "res/mipmap/icon_background.png", 432 }
+	{ "res/mipmap-xxxhdpi-v4/icon_background.webp", 432 },
+	{ "res/mipmap-xxhdpi-v4/icon_background.webp", 324 },
+	{ "res/mipmap-xhdpi-v4/icon_background.webp", 216 },
+	{ "res/mipmap-hdpi-v4/icon_background.webp", 162 },
+	{ "res/mipmap-mdpi-v4/icon_background.webp", 108 },
+	{ "res/mipmap/icon_background.webp", 432 }
 };
 
 static const LauncherIcon LAUNCHER_ADAPTIVE_ICON_MONOCHROMES[ICON_DENSITIES_COUNT] = {
-	{ "res/mipmap-xxxhdpi-v4/icon_monochrome.png", 432 },
-	{ "res/mipmap-xxhdpi-v4/icon_monochrome.png", 324 },
-	{ "res/mipmap-xhdpi-v4/icon_monochrome.png", 216 },
-	{ "res/mipmap-hdpi-v4/icon_monochrome.png", 162 },
-	{ "res/mipmap-mdpi-v4/icon_monochrome.png", 108 },
-	{ "res/mipmap/icon_monochrome.png", 432 }
+	{ "res/mipmap-xxxhdpi-v4/icon_monochrome.webp", 432 },
+	{ "res/mipmap-xxhdpi-v4/icon_monochrome.webp", 324 },
+	{ "res/mipmap-xhdpi-v4/icon_monochrome.webp", 216 },
+	{ "res/mipmap-hdpi-v4/icon_monochrome.webp", 162 },
+	{ "res/mipmap-mdpi-v4/icon_monochrome.webp", 108 },
+	{ "res/mipmap/icon_monochrome.webp", 432 }
 };
 
 static const int EXPORT_FORMAT_APK = 0;
@@ -2168,10 +2168,10 @@ void EditorExportPlatformAndroid::get_export_options(List<ExportOption> *r_optio
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "package/show_in_app_library"), true));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "package/show_as_launcher_app"), false));
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ICON_OPTION, PROPERTY_HINT_FILE, "*.png"), ""));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ADAPTIVE_ICON_FOREGROUND_OPTION, PROPERTY_HINT_FILE, "*.png"), ""));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ADAPTIVE_ICON_BACKGROUND_OPTION, PROPERTY_HINT_FILE, "*.png"), ""));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ADAPTIVE_ICON_MONOCHROME_OPTION, PROPERTY_HINT_FILE, "*.png"), ""));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ICON_OPTION, PROPERTY_HINT_FILE, "*.png,*webp"), ""));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ADAPTIVE_ICON_FOREGROUND_OPTION, PROPERTY_HINT_FILE, "*.png,*webp"), ""));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ADAPTIVE_ICON_BACKGROUND_OPTION, PROPERTY_HINT_FILE, "*.png,*webp"), ""));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, LAUNCHER_ADAPTIVE_ICON_MONOCHROME_OPTION, PROPERTY_HINT_FILE, "*.png,*webp"), ""));
 
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "graphics/opengl_debug"), false));
 
@@ -3988,7 +3988,7 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 			}
 		}
 
-		if (file.ends_with(".png") && file.contains("mipmap")) {
+		if (file.ends_with(".webp") && file.contains("mipmap")) {
 			for (int i = 0; i < ICON_DENSITIES_COUNT; ++i) {
 				if (main_image.is_valid() && !main_image->is_empty()) {
 					if (file == LAUNCHER_ICONS[i].export_path) {
