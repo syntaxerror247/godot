@@ -14,38 +14,38 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:gravity="center_vertical"
-			android:minHeight="48dp"
+			android:minHeight="32dp"
 			android:orientation="horizontal">
 
 			<ImageButton
 				android:id="@+id/game_menu_suspend_button"
 				style="?android:attr/borderlessButtonStyle"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
+				android:layout_width="32dp"
+				android:layout_height="32dp"
 				android:background="@drawable/game_menu_button_bg"
 				android:src="@drawable/suspend" />
 
 			<ImageButton
 				android:id="@+id/game_menu_next_frame_button"
 				style="?android:attr/borderlessButtonStyle"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
+				android:layout_width="32dp"
+				android:layout_height="32dp"
 				android:background="@drawable/game_menu_button_bg"
 				android:src="@drawable/next_frame" />
 
 			<Button
 				android:id="@+id/game_menu_set_time_scale_button"
 				style="?android:attr/borderlessButtonStyle"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
+				android:layout_width="32dp"
+				android:layout_height="32dp"
 				android:background="@drawable/game_menu_button_bg"
 				android:text="1.0x"/>
 
 			<ImageButton
 				android:id="@+id/game_menu_reset_time_scale_button"
 				style="?android:attr/borderlessButtonStyle"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
+				android:layout_width="32dp"
+				android:layout_height="32dp"
 				android:background="@drawable/game_menu_button_bg"
 				android:src="@drawable/reset" />
 
@@ -65,7 +65,7 @@
 					android:id="@+id/game_menu_unselect_nodes_button"
 					style="?android:attr/borderlessButtonStyle"
 					android:layout_width="wrap_content"
-					android:layout_height="48dp"
+					android:layout_height="32dp"
 					android:background="@drawable/game_menu_button_bg"
 					android:button="@null"
 					android:checked="true"
@@ -76,8 +76,8 @@
 				<RadioButton
 					android:id="@+id/game_menu_select_2d_nodes_button"
 					style="?android:attr/borderlessButtonStyle"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
 					android:background="@drawable/game_menu_button_bg"
 					android:button="@null"
 					android:drawableStart="@drawable/nodes_2d"
@@ -87,8 +87,8 @@
 				<RadioButton
 					android:id="@+id/game_menu_select_3d_nodes_button"
 					style="?android:attr/borderlessButtonStyle"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
 					android:background="@drawable/game_menu_button_bg"
 					android:button="@null"
 					android:drawableStart="@drawable/node_3d"
@@ -106,8 +106,8 @@
 			<ImageButton
 				android:id="@+id/game_menu_gui_visibility_button"
 				style="?android:attr/borderlessButtonStyle"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
+				android:layout_width="32dp"
+				android:layout_height="32dp"
 				android:background="@drawable/game_menu_button_bg"
 				android:src="@drawable/gui_visibility_selector" />
 
@@ -126,8 +126,8 @@
 				<RadioButton
 					android:id="@+id/game_menu_tool_select_button"
 					style="?android:attr/borderlessButtonStyle"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
 					android:background="@drawable/game_menu_button_bg"
 					android:button="@null"
 					android:checked="true"
@@ -137,8 +137,8 @@
 				<RadioButton
 					android:id="@+id/game_menu_list_select_button"
 					style="?android:attr/borderlessButtonStyle"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
+					android:layout_width="32dp"
+					android:layout_height="32dp"
 					android:background="@drawable/game_menu_button_bg"
 					android:button="@null"
 					android:drawableStart="@drawable/list_select"
@@ -159,8 +159,8 @@
 	<ImageButton
 		android:id="@+id/game_menu_options_button"
 		style="?android:attr/borderlessButtonStyle"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
+		android:layout_width="32dp"
+		android:layout_height="32dp"
 		android:background="@drawable/game_menu_button_bg"
 		android:src="@drawable/gui_tab_menu" />
 
@@ -175,8 +175,8 @@
 	<ImageButton
 		android:id="@+id/game_menu_collapse_button"
 		style="?android:attr/borderlessButtonStyle"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
+		android:layout_width="32dp"
+		android:layout_height="32dp"
 		android:background="@drawable/game_menu_selected_button_bg"
 		android:src="@drawable/baseline_expand_less_24"
 		/>
@@ -184,32 +184,32 @@
 	<ImageButton
 		android:id="@+id/game_menu_minimize_button"
 		style="?android:attr/borderlessButtonStyle"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
+		android:layout_width="32dp"
+		android:layout_height="32dp"
 		android:background="@drawable/game_menu_button_bg"
 		android:src="@drawable/baseline_minimize_24"/>
 
 	<ImageButton
 		android:id="@+id/game_menu_pip_button"
 		style="?android:attr/borderlessButtonStyle"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
+		android:layout_width="32dp"
+		android:layout_height="32dp"
 		android:background="@drawable/game_menu_selected_button_bg"
 		android:src="@drawable/baseline_picture_in_picture_alt_24"/>
 
 	<ImageButton
 		android:id="@+id/game_menu_fullscreen_button"
 		style="?android:attr/borderlessButtonStyle"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
+		android:layout_width="32dp"
+		android:layout_height="32dp"
 		android:background="@drawable/game_menu_selected_button_bg"
 		android:src="@drawable/baseline_fullscreen_selector"/>
 
 	<ImageButton
 		android:id="@+id/game_menu_close_button"
 		style="?android:attr/borderlessButtonStyle"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
+		android:layout_width="32dp"
+		android:layout_height="32dp"
 		android:background="@drawable/game_menu_button_bg"
 		android:src="@drawable/baseline_close_24"/>
 </LinearLayout>
