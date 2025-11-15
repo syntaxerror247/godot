@@ -32,7 +32,9 @@ package org.godotengine.godot
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.AlertDialog
+import android.app.ApplicationExitInfo
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -55,6 +57,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.android.server.os.TombstoneProtos.Tombstone
 import com.google.android.vending.expansion.downloader.*
 import org.godotengine.godot.error.Error
 import org.godotengine.godot.input.GodotEditText
@@ -891,6 +894,7 @@ class Godot private constructor(val context: Context) {
 			val dialog = builder.create()
 			dialog.show()
 		}
+		getLastNativeCrashTombstone()
 	}
 
 	/**
@@ -1286,5 +1290,30 @@ class Godot private constructor(val context: Context) {
 	@Keep
 	private fun nativeOnEditorWorkspaceSelected(workspace: String) {
 		primaryHost?.onEditorWorkspaceSelected(workspace)
+	}
+
+	@Keep
+	fun getLastNativeCrashTombstone() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+			return // Not supported before Android 12.
+		}
+
+		val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+		val exitReasons = am.getHistoricalProcessExitReasons(context.packageName, 0, 5)
+
+		for (aei in exitReasons) {
+			Log.d(TAG, "base reason: ${aei.reason}")
+			if (aei.reason == ApplicationExitInfo.REASON_CRASH_NATIVE) {
+				Log.d("NativeCrashDebug", "Reason: ${aei.reason}")
+				Log.d("NativeCrashDebug", "Timestamp: ${aei.timestamp}")
+				Log.d("NativeCrashDebug", "Description: ${aei.description}")
+				aei.traceInputStream?.use { input ->
+					val tombstone = Tombstone.parseFrom(input)
+					val documentsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+					val file = File(documentsDir, "last_native_tombstone.txt")
+					Log.d("NativeCrashDebug", "Saved tombstone at: ${file.absolutePath}")
+				}
+			}
+		}
 	}
 }
