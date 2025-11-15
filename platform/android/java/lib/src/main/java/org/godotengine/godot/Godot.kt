@@ -1311,7 +1311,8 @@ class Godot private constructor(val context: Context) {
 					val tombstone = Tombstone.parseFrom(input)
 					val documentsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
 					val file = File(documentsDir, "last_native_tombstone.txt")
-					Log.d("NativeCrashDebug", "Saved tombstone at: ${file.absolutePath}")
+					file.writeText(tombstone.toString())
+					Log.d("NativeCrashDebug", "Saved tombstone at: ${file.absolutePath} crash details: ${tombstone.getCrashDetails(0)}")
 				}
 			}
 		}
