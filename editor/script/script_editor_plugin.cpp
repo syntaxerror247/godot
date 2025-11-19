@@ -1870,7 +1870,7 @@ void ScriptEditor::_notification(int p_what) {
 		case NOTIFICATION_PROCESS: {
 			const int kb_height = DisplayServer::get_singleton()->virtual_keyboard_get_height();
 
-			if (kb_height == last_kb_height) {
+			if (kb_height == last_kb_height || !has_focus()) {
 				break;
 			}
 
