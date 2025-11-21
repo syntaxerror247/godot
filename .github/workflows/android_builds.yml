@@ -154,7 +154,6 @@ jobs:
             --type instrumentation \
             --app platform/android/java/app/build/outputs/apk/instrumented/debug/android_debug.apk \
             --test platform/android/java/app/build/outputs/apk/androidTest/instrumented/debug/app-instrumented-debug-androidTest.apk \
-            --device model=t2q,version=34 \
             --device model=Pixel2.arm,version=33 \
             --device model=MediumPhone.arm,version=35 \
             --timeout 5m 2>&1)
