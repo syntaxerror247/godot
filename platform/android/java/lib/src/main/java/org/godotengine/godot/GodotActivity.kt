@@ -72,48 +72,18 @@ abstract class GodotActivity : FragmentActivity(), GodotHost {
 	protected var godotFragment: GodotFragment? = null
 		private set
 
-	/**
-	 * Strip out the command line parameters from intent targeting exported activities.
-	 */
-	protected fun sanitizeLaunchIntent(launchIntent: Intent = intent): Intent {
-		val targetComponent = launchIntent.component ?: componentName
-		val activityInfo = packageManager.getActivityInfo(targetComponent, 0)
-		if (activityInfo.exported) {
-			launchIntent.removeExtra(EXTRA_COMMAND_LINE_PARAMS)
-		}
-
-		return launchIntent
-	}
-
-	/**
-	 * Only retrieve the command line parameters from the intent from non-exported activities.
-	 * This ensures only internal components can configure how the engine is run.
-	 */
-	protected fun retrieveCommandLineParamsFromLaunchIntent(launchIntent: Intent = intent): Array<String> {
-		val targetComponent = launchIntent.component ?: componentName
-		val activityInfo = packageManager.getActivityInfo(targetComponent, 0)
-		if (!activityInfo.exported) {
-			val params = launchIntent.getStringArrayExtra(EXTRA_COMMAND_LINE_PARAMS)
-			return params ?: emptyArray()
-		}
-		return emptyArray()
-	}
-
 	@CallSuper
 	override fun onCreate(savedInstanceState: Bundle?) {
-		intent = sanitizeLaunchIntent(intent)
-
 		val assetsCommandLine = try {
 			CommandLineFileParser.parseCommandLine(assets.open("_cl_"))
-		} catch (_: Exception) {
+		} catch (ignored: Exception) {
 			mutableListOf()
 		}
-		Log.d(TAG, "Project command line parameters: $assetsCommandLine")
 		commandLineParams.addAll(assetsCommandLine)
 
-		val intentCommandLine = retrieveCommandLineParamsFromLaunchIntent()
-		Log.d(TAG, "Launch intent $intent with parameters ${intentCommandLine.contentToString()}")
-		commandLineParams.addAll(intentCommandLine)
+		val params = intent.getStringArrayExtra(EXTRA_COMMAND_LINE_PARAMS)
+		Log.d(TAG, "Starting intent $intent with parameters ${params.contentToString()}")
+		commandLineParams.addAll(params ?: emptyArray())
 
 		super.onCreate(savedInstanceState)
 
@@ -197,9 +167,10 @@ abstract class GodotActivity : FragmentActivity(), GodotHost {
 	}
 
 	override fun onNewIntent(newIntent: Intent) {
-		intent = sanitizeLaunchIntent(newIntent)
-		super.onNewIntent(intent)
-		handleStartIntent(intent, false)
+		super.onNewIntent(newIntent)
+		intent = newIntent
+
+		handleStartIntent(newIntent, false)
 	}
 
 	private fun handleStartIntent(intent: Intent, newLaunch: Boolean) {
