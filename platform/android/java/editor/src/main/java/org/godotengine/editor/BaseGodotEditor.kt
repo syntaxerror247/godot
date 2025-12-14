@@ -374,6 +374,11 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 			editorLoadingIndicator?.visibility = View.GONE
 			updateWindowAppearance()
 		}
+		val launchIntent = intent
+		if (launchIntent.action == "com.google.intent.action.TEST_LOOP") {
+			val scenario = launchIntent.getIntExtra("scenario", 0)
+			// Code to handle your game loop here
+		}
 	}
 
 	override fun onResume() {
