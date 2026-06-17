@@ -2680,6 +2680,13 @@ void TextEdit::gui_input(const Ref<InputEvent> &p_gui_input) {
 		}
 
 		if (touch->is_pressed() && !touch->is_double_tap()) {
+			if (draw_minimap) {
+				_update_minimap_click();
+				if (dragging_minimap) {
+					return;
+				}
+			}
+
 			if (touch_dragging_deaccel) {
 				_cancel_inertial_scroll();
 			}
@@ -2730,11 +2737,12 @@ void TextEdit::gui_input(const Ref<InputEvent> &p_gui_input) {
 			}
 
 			// Minimap.
-			if (draw_minimap) {
-				_update_minimap_click();
-				if (dragging_minimap) {
-					return;
-				}
+			if (draw_minimap && dragging_minimap) {
+				// touch is released, cleanup minimap logic.
+				dragging_minimap = false;
+				can_drag_minimap = false;
+				minimap_clicked = false;
+				return;
 			}
 
 			// Update caret.
