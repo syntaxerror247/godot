@@ -34,6 +34,7 @@
 
 class BoxContainer;
 class Button;
+class CodeEdit;
 class TextureRect;
 
 class TouchActionsPanel : public PanelContainer {
@@ -72,6 +73,9 @@ private:
 	bool is_floating = false; // Embedded panel mode is default.
 	int embedded_panel_index = 0;
 
+	CodeEdit *text_editor = nullptr;
+	void _set_text_editor();
+
 	void _notification(int p_what);
 	virtual void input(const Ref<InputEvent> &event) override;
 
@@ -85,6 +89,7 @@ private:
 	Button *_add_new_action_button(const String &p_shortcut, const String &p_name, Key p_keycode = Key::NONE);
 	void _add_new_modifier_button(Modifier p_modifier);
 	void _on_modifier_button_toggled(bool p_pressed, int p_modifier);
+	void _refresh_undo_redo();
 
 	void _hardware_keyboard_connected(bool p_connected);
 

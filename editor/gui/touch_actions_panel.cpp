@@ -28,10 +28,16 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+// Ideas:
+// 1. Echo button press, helpful for delete, undo, redo
+// 2. Disable undeo/redo buttons when no undo/redo history available.
+
 #include "touch_actions_panel.h"
 
 #include "core/input/input.h"
 #include "core/object/callable_mp.h"
+#include "editor/editor_undo_redo_manager.h"
+#include "editor/script/script_editor_plugin.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
@@ -44,7 +50,12 @@ void TouchActionsPanel::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			DisplayServer::get_singleton()->set_hardware_keyboard_connection_change_callback(callable_mp(this, &TouchActionsPanel::_hardware_keyboard_connected));
+			DisplayServer::get_singleton()->connect("orientation_changed", callable_mp(this, &TouchActionsPanel::_screen_orientation_changed));
 			_hardware_keyboard_connected(DisplayServer::get_singleton()->has_hardware_keyboard());
+
+			EditorUndoRedoManager::get_singleton()->connect("version_changed", callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+			EditorUndoRedoManager::get_singleton()->connect("history_changed", callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+
 			if (!is_floating) {
 				get_parent()->move_child(this, embedded_panel_index);
 			}
@@ -93,6 +104,49 @@ void TouchActionsPanel::_hardware_keyboard_connected(bool p_connected) {
 	set_visible(!p_connected);
 }
 
+void TouchActionsPanel::_screen_orientation_changed(int p_new_orientation) {
+	if (!is_floating) {
+		return;
+	}
+	portrait_mode = p_new_orientation == 1;
+	set_position(EDITOR_DEF(portrait_mode ? "_touch_actions_panel_portrait_pos" : "_touch_actions_panel_position", Point2(200, 480)));
+}
+
+void TouchActionsPanel::_set_text_editor() {
+	print_line("_set_text_editor");
+	if (text_editor != nullptr) {
+		text_editor->disconnect(SceneStringName(text_changed), callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+		text_editor->disconnect(SceneStringName(focus_entered), callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+		text_editor->disconnect(SceneStringName(focus_exited), callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+		text_editor = nullptr;
+	}
+
+	if (TextEditorBase *editor = Object::cast_to<TextEditorBase>(ScriptEditor::get_singleton()->get_current_editor())) {
+		if (CodeTextEditor *code_editor = editor->get_code_editor()) {
+			if (CodeEdit *t_editor = code_editor->get_text_editor()) {
+				t_editor->connect(SceneStringName(text_changed), callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+				t_editor->connect(SceneStringName(focus_entered), callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+				t_editor->connect(SceneStringName(focus_exited), callable_mp(this, &TouchActionsPanel::_refresh_undo_redo));
+				text_editor = t_editor;
+			}
+		}
+	}
+	_refresh_undo_redo();
+}
+
+void TouchActionsPanel::_refresh_undo_redo() {
+	print_line("_refresh_undo_redo, text_editor=", text_editor!=nullptr);
+	if (text_editor != nullptr && text_editor->has_focus()) {
+		print_line("part2");
+		undo_button->set_disabled(!text_editor->has_undo());
+		redo_button->set_disabled(!text_editor->has_redo());
+	} else {
+		EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
+		undo_button->set_disabled(!undo_redo->has_undo());
+		redo_button->set_disabled(!undo_redo->has_redo());
+	}
+}
+
 void TouchActionsPanel::_simulate_editor_shortcut(const String &p_shortcut_name) {
 	Ref<Shortcut> shortcut = ED_GET_SHORTCUT(p_shortcut_name);
 
@@ -106,6 +160,11 @@ void TouchActionsPanel::_simulate_editor_shortcut(const String &p_shortcut_name)
 }
 
 void TouchActionsPanel::_simulate_key_press(Key p_keycode) {
+	if (text_editor == nullptr) {
+		ScriptEditor::get_singleton()->connect("editor_script_changed", callable_mp(this, &TouchActionsPanel::_set_text_editor).unbind(1));
+		ScriptEditor::get_singleton()->connect("script_close", callable_mp(this, &TouchActionsPanel::_set_text_editor).unbind(1));
+		_set_text_editor();
+	}
 	Ref<InputEventKey> event;
 	event.instantiate();
 	event->set_keycode(p_keycode);

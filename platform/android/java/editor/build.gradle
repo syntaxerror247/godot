@@ -166,6 +166,10 @@ android {
         android {
             dimension "android_distribution"
             missingDimensionStrategy 'products', 'editor'
+            ndk {
+                //noinspection ChromeOsAbiSupport
+                abiFilters "arm64-v8a"
+            }
         }
         horizonos {
             dimension "android_distribution"
