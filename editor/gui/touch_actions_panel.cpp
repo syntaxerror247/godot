@@ -223,9 +223,8 @@ void TouchActionsPanel::_switch_embedded_panel_side() {
 	EditorSettings::get_singleton()->save();
 }
 
-TouchActionsPanel::TouchActionsPanel() {
-	int panel_mode = EDITOR_GET("interface/touchscreen/touch_actions_panel");
-	is_floating = panel_mode == 2;
+TouchActionsPanel::TouchActionsPanel(bool p_floating) {
+	is_floating = p_floating;
 
 	if (is_floating) {
 		Ref<StyleBoxFlat> panel_style;
@@ -297,6 +296,8 @@ TouchActionsPanel::TouchActionsPanel() {
 	cut_button = _add_new_action_button("ui_cut", TTRC("Cut"));
 	copy_button = _add_new_action_button("ui_copy", TTRC("Copy"));
 	paste_button = _add_new_action_button("ui_paste", TTRC("Paste"));
+	tab_button = _add_new_action_button("", TTRC("Tab"), Key::TAB);
+	tab_button->set_text("Tab");
 
 	_add_new_modifier_button(MODIFIER_CTRL);
 	_add_new_modifier_button(MODIFIER_SHIFT);

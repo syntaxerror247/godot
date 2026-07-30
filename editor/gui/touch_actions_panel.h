@@ -48,6 +48,7 @@ private:
 	Button *cut_button = nullptr;
 	Button *copy_button = nullptr;
 	Button *paste_button = nullptr;
+	Button *tab_button = nullptr;
 
 	TextureRect *drag_handle = nullptr;
 	Button *layout_toggle_button = nullptr;
@@ -88,5 +89,7 @@ private:
 	void _hardware_keyboard_connected(bool p_connected);
 
 public:
-	TouchActionsPanel();
+	TouchActionsPanel(bool p_floating);
+
+	bool is_panel_floating() const { return is_floating; }
 };

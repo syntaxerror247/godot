@@ -1686,6 +1686,10 @@ void EditorNode::_viewport_resized() {
 	if (w) {
 		was_window_windowed_last = w->get_mode() == Window::MODE_WINDOWED;
 	}
+
+#ifdef ANDROID_ENABLED
+	_touch_actions_panel_mode_changed();
+#endif
 }
 
 void EditorNode::_titlebar_resized() {
@@ -8333,22 +8337,40 @@ void EditorNode::_bottom_panel_resized() {
 #ifdef ANDROID_ENABLED
 void EditorNode::_touch_actions_panel_mode_changed() {
 	int panel_mode = EDITOR_GET("interface/touchscreen/touch_actions_panel");
+
+	if (panel_mode == 3) { // Auto
+		Vector2 win_size = DisplayServer::get_singleton()->window_get_size();
+		if (win_size.height > win_size.width) {
+			if (touch_actions_panel != nullptr && touch_actions_panel->is_panel_floating()) {
+				// Already floating; no need to reset.
+				return;
+			}
+			panel_mode = 2; // Floating
+		} else {
+			if (touch_actions_panel != nullptr && !touch_actions_panel->is_panel_floating()) {
+				// Already embedded; no need to reset.
+				return;
+			}
+			panel_mode = 1; // Embedded
+		}
+	}
+
 	switch (panel_mode) {
-		case 1:
+		case 1: // Embedded
 			if (touch_actions_panel != nullptr) {
 				touch_actions_panel->queue_free();
 			}
-			touch_actions_panel = memnew(TouchActionsPanel);
+			touch_actions_panel = memnew(TouchActionsPanel(false));
 			main_hbox->call_deferred("add_child", touch_actions_panel);
 			break;
-		case 2:
+		case 2: // Floating
 			if (touch_actions_panel != nullptr) {
 				touch_actions_panel->queue_free();
 			}
-			touch_actions_panel = memnew(TouchActionsPanel);
+			touch_actions_panel = memnew(TouchActionsPanel(true));
 			call_deferred("add_child", touch_actions_panel);
 			break;
-		case 0:
+		case 0: // Disabled
 			if (touch_actions_panel != nullptr) {
 				touch_actions_panel->queue_free();
 				touch_actions_panel = nullptr;
