@@ -192,6 +192,7 @@ void ProjectManager::_update_compact_mode(bool p_reset_threshold) {
 
 	bool compact_mode = get_size().width < compact_mode_threshold;
 	project_list_sidebar->set_visible(!compact_mode);
+	donate_btn_comp->set_visible(compact_mode);
 }
 
 void ProjectManager::_update_size_limits() {
@@ -295,6 +296,7 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 			erase_missing_btn->set_button_icon(get_editor_theme_icon("Clear"));
 			create_tag_btn->set_button_icon(get_editor_theme_icon("Add"));
 			donate_btn->set_button_icon(get_editor_theme_icon("Heart"));
+			donate_btn_comp->set_button_icon(get_editor_theme_icon("Heart"));
 
 			tag_error->add_theme_color_override(SceneStringName(font_color), get_theme_color("error_color", EditorStringName(Editor)));
 			tag_edit_error->add_theme_color_override(SceneStringName(font_color), get_theme_color("error_color", EditorStringName(Editor)));
@@ -1486,6 +1488,12 @@ ProjectManager::ProjectManager() {
 		title_bar_logo->set_tooltip_text(TTR("About Godot"));
 		left_hbox->add_child(title_bar_logo);
 		title_bar_logo->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_show_about));
+
+		donate_btn_comp = memnew(Button);
+		donate_btn_comp->set_text(TTRC("Donate"));
+		donate_btn_comp->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_open_donate_page));
+		donate_btn_comp->hide(); // Hidden by default and only shows in compact mode.
+		left_hbox->add_child(donate_btn_comp);
 
 		bool global_menu = !bool(EDITOR_GET("interface/editor/appearance/use_embedded_menu")) && NativeMenu::get_singleton()->has_feature(NativeMenu::FEATURE_GLOBAL_MENU);
 		if (global_menu) {

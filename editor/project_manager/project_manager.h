@@ -168,6 +168,7 @@ class ProjectManager : public Control {
 	Button *erase_btn = nullptr;
 	Button *erase_missing_btn = nullptr;
 	Button *donate_btn = nullptr;
+	Button *donate_btn_comp = nullptr;
 
 	HBoxContainer *open_btn_container = nullptr;
 	PopupMenu *open_options_popup = nullptr;
