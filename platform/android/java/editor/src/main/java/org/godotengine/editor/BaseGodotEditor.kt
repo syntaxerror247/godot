@@ -262,6 +262,7 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 	private var distractionFreeModeEnabled = false
 	private var activeWorkspace: String? = null
 	private var currentOrientation = Configuration.ORIENTATION_UNDEFINED
+	private var disableOrientationChange = false;
 
 	override fun getGodotAppLayout() = R.layout.godot_editor_layout
 
@@ -573,6 +574,12 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 				enableHapticFeedback(hapticEnabled)
 			}
 		}
+		disableOrientationChange = java.lang.Boolean.parseBoolean(GodotLib.getEditorSetting("interface/touchscreen/disable_orientation_change"))
+		if (disableOrientationChange) {
+			changingOrientationAllowed = true
+			requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+			changingOrientationAllowed = false
+		}
 	}
 
 	private fun updateWindowAppearance() {
@@ -847,7 +854,7 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 	/**
 	 * The Godot Android Editor sets its own orientation via its AndroidManifest
 	 */
-	protected open fun overrideOrientationRequest() = isLargeScreen || godot?.isProjectManagerHint() == true || !changingOrientationAllowed
+	protected open fun overrideOrientationRequest() = godot?.isProjectManagerHint() == true || !changingOrientationAllowed
 
 	protected open fun overrideVolumeButtons() = false
 
@@ -1076,19 +1083,19 @@ abstract class BaseGodotEditor : GodotActivity(), GameMenuFragment.GameMenuListe
 			}
 		}
 
-		if (!isLargeScreen) {
-			toggleEditorOrientation()
-		}
+		toggleEditorOrientation()
 	}
 
 	override fun onDistractionFreeModeChanged(enabled: Boolean) {
 		distractionFreeModeEnabled = enabled
-		if (!isLargeScreen) {
-			toggleEditorOrientation()
-		}
+		toggleEditorOrientation()
 	}
 
 	private fun toggleEditorOrientation() {
+		if (isLargeScreen || disableOrientationChange) {
+			return
+		}
+
 		if (distractionFreeModeEnabled) {
 			changingOrientationAllowed = true
 			requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
