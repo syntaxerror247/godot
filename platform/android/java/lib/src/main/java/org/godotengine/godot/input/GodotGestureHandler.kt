@@ -30,6 +30,7 @@
 
 package org.godotengine.godot.input
 
+import android.util.Log
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -72,6 +73,7 @@ internal class GodotGestureHandler(private val inputHandler: GodotInputHandler) 
 	private var longPressInProgress = false
 	private var emulatedRightClickInProgress = false
 	private var pointerCaptureInProgress = false
+	private var panOriginTouchCancelled = false
 
 	private var lastDragX: Float = 0.0f
 	private var lastDragY: Float = 0.0f
@@ -146,6 +148,7 @@ internal class GodotGestureHandler(private val inputHandler: GodotInputHandler) 
 	}
 
 	private fun onActionUp(event: MotionEvent): Boolean {
+		panOriginTouchCancelled = false // Reset the flag.
 		if (event.actionMasked == MotionEvent.ACTION_CANCEL && pointerCaptureInProgress) {
 			// Don't dispatch the ACTION_CANCEL while a capture is in progress
 			return true
@@ -244,9 +247,15 @@ internal class GodotGestureHandler(private val inputHandler: GodotInputHandler) 
 		val x = terminusEvent.x
 		val y = terminusEvent.y
 		if (terminusEvent.pointerCount >= 2 && panningEnabled && !pointerCaptureInProgress && !dragInProgress) {
+			Log.d("test", "handlePanEvent")
+			if (!panOriginTouchCancelled) {
+				inputHandler.handleMotionEvent(originEvent, MotionEvent.ACTION_CANCEL)
+				panOriginTouchCancelled = true
+			}
 			inputHandler.handlePanEvent(x, y, distanceX / 5f, distanceY / 5f)
 		} else if (!scaleInProgress) {
 			dragInProgress = true
+			Log.d("test", "handle Drag Event")
 			lastDragX = terminusEvent.getX(0)
 			lastDragY = terminusEvent.getY(0)
 			inputHandler.handleMotionEvent(terminusEvent)
