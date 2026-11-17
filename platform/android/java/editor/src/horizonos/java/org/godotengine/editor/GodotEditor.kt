@@ -30,12 +30,26 @@
 
 package org.godotengine.editor
 
+import android.os.Bundle
+import android.widget.TextView
+import androidx.core.view.isVisible
+
 /**
  * Primary window of the Godot Editor.
  *
  * This is the implementation of the editor used when running on HorizonOS devices.
  */
 open class GodotEditor : BaseGodotEditor() {
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+
+		if (BuildConfig.BUILD_TYPE != "release") {
+			val watermark = findViewById<TextView>(R.id.editor_flavor_watermark)
+			watermark.text = "HorizonOS Build"
+			watermark.isVisible = true
+		}
+	}
 
 	override fun getExcludedPermissions(): MutableSet<String> {
 		val excludedPermissions = super.getExcludedPermissions().apply {

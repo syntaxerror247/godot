@@ -65,4 +65,20 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintVertical_bias="0.80"/>
 
+	<TextView
+		android:id="@+id/editor_flavor_watermark"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="8dp"
+		android:layout_marginBottom="4dp"
+		android:background="#7E070707"
+		android:clickable="false"
+		android:focusable="false"
+		android:text="Standard Build"
+		android:textColor="#8EFFFFFF"
+		android:textSize="12sp"
+		android:visibility="gone"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
